@@ -8,8 +8,11 @@ import com.solucoesG.SmartFinance.dto.UsuarioRequestDTO;
 import com.solucoesG.SmartFinance.dto.UsuarioResponseDTO;
 import com.solucoesG.SmartFinance.exception.CredenciaisInvalidasException;
 import com.solucoesG.SmartFinance.exception.EmailJaCadastradoException;
+import com.solucoesG.SmartFinance.exception.UsuarioComContasVinculadasException;
 import com.solucoesG.SmartFinance.exception.UsuarioNaoEncontradoException;
+import com.solucoesG.SmartFinance.model.Conta;
 import com.solucoesG.SmartFinance.model.Usuario;
+import com.solucoesG.SmartFinance.repository.ContaRepository;
 import com.solucoesG.SmartFinance.repository.UsuarioRepository;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -25,11 +28,12 @@ public class UsuarioService {
     private final UsuarioRepository usuarioRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
+    private final ContaRepository contaRepository;
 
-    public UsuarioService(UsuarioRepository usuarioRepository, PasswordEncoder passwordEncoder, JwtService jwtService) {
+    public UsuarioService(UsuarioRepository usuarioRepository, PasswordEncoder passwordEncoder, ContaRepository contaRepository, JwtService jwtService) {
         this.usuarioRepository = usuarioRepository;
         this.passwordEncoder = passwordEncoder;
-
+        this.contaRepository = contaRepository;
         this.jwtService = jwtService;
     }
 
@@ -89,6 +93,11 @@ public class UsuarioService {
 
 
     public void deletar(UUID id) {
+        Usuario usuario = buscarEntidadePorId(id);
+        if(contaRepository.existsByUsuarioId(id)) {
+            throw new UsuarioComContasVinculadasException("Existem contas vinculadas a esse usuário");
+        }
+
         usuarioRepository.deleteById(id);
     }
 }

@@ -12,7 +12,6 @@ import java.util.List;
 import java.util.UUID;
 
 @RestController
-
 public class TransacaoController {
 
     private final TransacaoService transacaoService;
@@ -50,5 +49,13 @@ public class TransacaoController {
     public ResponseEntity<List<TransacaoResponseDTO>> listarPorCategoria(@RequestParam UUID categoriaId) {
         List<TransacaoResponseDTO> listarCC = transacaoService.listarPorCategoria(categoriaId);
         return ResponseEntity.ok(listarCC);
+    }
+
+
+
+    @DeleteMapping("/transacoes/{id}")
+    public ResponseEntity<Void> deletar(UUID id) {
+        transacaoService.deletar(id);
+        return ResponseEntity.noContent().build();
     }
 }

@@ -12,4 +12,10 @@ public interface TransacaoRepository extends JpaRepository<Transacao, UUID> {
     List<Transacao> findByContaIdAndDataBetween(UUID contaId, LocalDate inicio, LocalDate fim);
 
     List<Transacao> findByCategoriaId(UUID categoriaId);
+
+    boolean existsByContaId(UUID id);
+
+    boolean existsByCartaoId(UUID cartaoId);
+
+    boolean existsByCategoriaId(UUID categoriaId);
 }

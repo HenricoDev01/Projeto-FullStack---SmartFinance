@@ -38,4 +38,11 @@ public class CategoriaController {
         return ResponseEntity.ok(listarCategoria);
     }
 
+
+    @DeleteMapping("/categorias/{id}")
+    public ResponseEntity<Void> deletar(UUID id) {
+        categoriaService.deletar(id);
+        return ResponseEntity.noContent().build();
+    }
+
 }

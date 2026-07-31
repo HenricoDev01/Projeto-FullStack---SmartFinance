@@ -3,9 +3,11 @@ package com.solucoesG.SmartFinance.service;
 import com.solucoesG.SmartFinance.dto.CartaoRequestDTO;
 import com.solucoesG.SmartFinance.dto.CartaoResponseDTO;
 import com.solucoesG.SmartFinance.exception.CartaoNaoEncontradoException;
+import com.solucoesG.SmartFinance.exception.CartaoVinculadoATransacaoException;
 import com.solucoesG.SmartFinance.model.Cartao;
 import com.solucoesG.SmartFinance.model.Conta;
 import com.solucoesG.SmartFinance.repository.CartaoRepository;
+import com.solucoesG.SmartFinance.repository.TransacaoRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -17,10 +19,13 @@ public class CartaoService {
 
     private final CartaoRepository cartaoRepository;
     private final ContaService contaService;
+    private final TransacaoRepository transacaoRepository;
 
-    public CartaoService(CartaoRepository cartaoRepository, ContaService contaService) {
+    public CartaoService(CartaoRepository cartaoRepository, ContaService contaService, TransacaoRepository transacaoRepository) {
         this.cartaoRepository = cartaoRepository;
         this.contaService = contaService;
+        this.transacaoRepository = transacaoRepository;
+
     }
 
 
@@ -62,7 +67,17 @@ public class CartaoService {
         }
 
         return listaConvertida;
-
     }
+
+
+    public void deletar(UUID id) {
+        Cartao cartao = buscarEntidadePorId(id);
+        if(transacaoRepository.existsByCartaoId(id)) {
+            throw new CartaoVinculadoATransacaoException("Existe um cartao vinculado a essa transação");
+        }
+
+        cartaoRepository.deleteById(id);
+
+     }
 
 }

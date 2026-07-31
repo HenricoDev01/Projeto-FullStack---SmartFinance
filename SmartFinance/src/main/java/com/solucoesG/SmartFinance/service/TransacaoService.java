@@ -80,6 +80,11 @@ public class TransacaoService {
     }
 
 
+    public boolean existePorContaId(UUID contaId) {
+        return transacaoRepository.existsByContaId(contaId);
+    }
+
+
     public List<TransacaoResponseDTO> listarTodos() {
         List<Transacao> listaOriginal =  transacaoRepository.findAll();
         List<TransacaoResponseDTO> listaConvertida = new ArrayList<>();
@@ -93,6 +98,19 @@ public class TransacaoService {
 
         return listaConvertida;
     }
+
+
+    public boolean existePorCartaoId(UUID cartaoId) {
+        return transacaoRepository.existsByCartaoId(cartaoId);
+    }
+
+
+    public boolean existePorCategoriaId(UUID categoriaId) {
+        return transacaoRepository.existsByCategoriaId(categoriaId);
+    }
+
+
+
 
     public List<TransacaoResponseDTO> listarPorContaEPeriodo(UUID contaId, LocalDate inicio, LocalDate fim) {
         List<Transacao> listaOriginal =  transacaoRepository.findByContaIdAndDataBetween(contaId, inicio, fim);
@@ -121,6 +139,11 @@ public class TransacaoService {
         }
 
         return listaConvertida;
+    }
+
+
+    public void deletar(UUID id) {
+        transacaoRepository.deleteById(id);
     }
 
 }

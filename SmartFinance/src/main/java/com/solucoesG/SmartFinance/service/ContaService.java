@@ -2,11 +2,13 @@ package com.solucoesG.SmartFinance.service;
 
 import com.solucoesG.SmartFinance.dto.ContaRequestDTO;
 import com.solucoesG.SmartFinance.dto.ContaResponseDTO;
+import com.solucoesG.SmartFinance.exception.ContaComCartaoOuTransacaoVinculadaException;
 import com.solucoesG.SmartFinance.exception.ContaNaoEncontradaException;
 import com.solucoesG.SmartFinance.model.Conta;
 import com.solucoesG.SmartFinance.model.Usuario;
+import com.solucoesG.SmartFinance.repository.CartaoRepository;
 import com.solucoesG.SmartFinance.repository.ContaRepository;
-import com.solucoesG.SmartFinance.repository.UsuarioRepository;
+import com.solucoesG.SmartFinance.repository.TransacaoRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -18,10 +20,14 @@ public class ContaService {
 
     private final ContaRepository contaRepository;
     private final UsuarioService usuarioService;
+    private final CartaoRepository cartaoRepository;
+    private final TransacaoRepository transacaoRepository;
 
-    public ContaService(ContaRepository contaRepository, UsuarioService usuarioService) {
+    public ContaService(ContaRepository contaRepository, UsuarioService usuarioService, CartaoRepository cartaoRepository, TransacaoRepository transacaoRepository) {
         this.contaRepository = contaRepository;
         this.usuarioService = usuarioService;
+        this.cartaoRepository = cartaoRepository;
+        this.transacaoRepository = transacaoRepository;
     }
 
     public ContaResponseDTO cadastrar(ContaRequestDTO dto, UUID usuarioId) {
@@ -61,5 +67,14 @@ public class ContaService {
         return listaConvertida;
     }
 
+
+    public void deletar(UUID id) {
+        Conta conta = buscarEntidadePorId(id);
+        if(cartaoRepository.existsByContaId(id) || transacaoRepository.existsByContaId(id)) {
+           throw  new ContaComCartaoOuTransacaoVinculadaException("Existe(m) conta(s) e/ou Transações(ão) vinculadas a essa conta");
+        }
+
+        contaRepository.deleteById(id);
+    }
 
 }

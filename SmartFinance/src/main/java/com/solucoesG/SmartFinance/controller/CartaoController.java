@@ -37,6 +37,10 @@ public class CartaoController {
         return ResponseEntity.ok(listarTodos);
     }
 
-
+    @DeleteMapping("/cartoes/{id}")
+    public ResponseEntity<Void> deletar(UUID id) {
+        cartaoService.deletar(id);
+        return ResponseEntity.noContent().build();
+    }
 
 }

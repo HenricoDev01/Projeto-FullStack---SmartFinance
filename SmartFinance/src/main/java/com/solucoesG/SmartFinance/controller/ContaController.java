@@ -37,4 +37,10 @@ public class ContaController {
         List<ContaResponseDTO> listarContas = contaService.listarTodos();
         return ResponseEntity.ok(listarContas);
     }
+
+    @DeleteMapping("contas/{id}")
+    public ResponseEntity<Void> deletar(@PathVariable UUID id) {
+        contaService.deletar(id);
+        return ResponseEntity.noContent().build();
+    }
 }

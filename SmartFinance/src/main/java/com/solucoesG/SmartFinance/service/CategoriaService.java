@@ -3,8 +3,10 @@ package com.solucoesG.SmartFinance.service;
 import com.solucoesG.SmartFinance.dto.CategoriaRequestDTO;
 import com.solucoesG.SmartFinance.dto.CategoriaResponseDTO;
 import com.solucoesG.SmartFinance.exception.CategoriaNaoEncontradaException;
+import com.solucoesG.SmartFinance.exception.CategoriaVinculadaATransacaoException;
 import com.solucoesG.SmartFinance.model.Categoria;
 import com.solucoesG.SmartFinance.repository.CategoriaRepository;
+import com.solucoesG.SmartFinance.repository.TransacaoRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -15,9 +17,11 @@ import java.util.UUID;
 public class CategoriaService {
 
     private final CategoriaRepository categoriaRepository;
+    private final TransacaoRepository transacaoRepository;
 
-    public CategoriaService(CategoriaRepository categoriaRepository) {
+    public CategoriaService(CategoriaRepository categoriaRepository, TransacaoRepository transacaoRepository) {
         this.categoriaRepository = categoriaRepository;
+        this.transacaoRepository = transacaoRepository;
     }
 
     public CategoriaResponseDTO cadastrar(CategoriaRequestDTO dto) {
@@ -55,4 +59,17 @@ public class CategoriaService {
 
         return listaConvertida;
     }
+
+
+
+    public void deletar(UUID id) {
+        Categoria categoria = buscarEntidadePorId(id);
+        if(transacaoRepository.existsByCategoriaId(id)) {
+            throw new CategoriaVinculadaATransacaoException("Existe uma categoria vinculada a essa transação");
+        }
+
+        categoriaRepository.deleteById(id);
+    }
+
+
 }
